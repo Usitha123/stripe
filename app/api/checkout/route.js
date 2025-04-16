@@ -14,12 +14,15 @@ export async function POST(request) {
   try {
     const { line_items } = await request.json();
 
+    // Log line_items to the console
+    console.log('Received line_items:', line_items);
+
     const session = await stripe.checkout.sessions.create({
       line_items,
       mode: 'payment',
-      shipping_address_collection: {
-        allowed_countries: ['US', 'BR'],
-      },
+      // shipping_address_collection: {
+      //   allowed_countries: ['US', 'BR'],
+      // },
       success_url: `${process.env.BASE_URL}/complete?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.BASE_URL}/cancel`,
     });
@@ -28,6 +31,7 @@ export async function POST(request) {
       status: 200,
     });
   } catch (error) {
+    console.error('Stripe session error:', error);
     return new Response(JSON.stringify({ error: error.message }), {
       status: 500,
     });
